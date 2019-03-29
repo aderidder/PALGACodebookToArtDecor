@@ -66,7 +66,7 @@ class Concept {
         if(code.equalsIgnoreCase("") || codesystem.equalsIgnoreCase("") || description_code.equalsIgnoreCase("")) {
             // next check one of the mandatory fields is not empty; if so give an error
             if(!code.equalsIgnoreCase("") || !codesystem.equalsIgnoreCase("") || !description_code.equalsIgnoreCase("")){
-                logger.log(Level.ERROR, "Something wrong with a codelist entry for concept"+id);
+                logger.log(Level.ERROR, "Mandatory values missing in a codelist entry for concept "+id+" (code, codesystem and description of the code need a value)");
             }
         }
         else{
