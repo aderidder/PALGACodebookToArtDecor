@@ -17,6 +17,18 @@ import java.util.List;
 public class ExcelUtils {
     private static final Logger logger = LogManager.getLogger(ExcelUtils.class.getName());
 
+    public static boolean isEmptyRow(Row row){
+        boolean isEmptyRow = true;
+        for(int cellNum = row.getFirstCellNum(); cellNum < row.getLastCellNum(); cellNum++){
+            Cell cell = row.getCell(cellNum);
+            if(cell != null && cell.getCellType() != Cell.CELL_TYPE_BLANK && !cell.toString().trim().equalsIgnoreCase("")){
+                isEmptyRow = false;
+            }
+        }
+        return isEmptyRow;
+    }
+
+
     /**
      * transform row to list
      * @param row    the row

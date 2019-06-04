@@ -15,7 +15,9 @@ public class ArtDecorValueSet {
     private String statusCode = "draft";
 
     private List<ConceptOption> conceptOptionList = new ArrayList<>();
+    private List<ConceptOption> exceptionConceptOptionList = new ArrayList<>();
     private List<LanguageValueSet> languageValueSetList = new ArrayList<>();
+
 
     private String artdecorValueSetId;
 
@@ -35,12 +37,25 @@ public class ArtDecorValueSet {
         languageValueSetList.add(new LanguageValueSet(language, description));
     }
 
-    public void addConceptOption(String conceptCode, String conceptCodeSystem, String conceptCodeSystemName, String displayName){
-        conceptOptionList.add(new ConceptOption(conceptCode, conceptCodeSystem, conceptCodeSystemName, displayName));
+    public void addConceptOption(String conceptCode, String conceptCodeSystem, String conceptCodeSystemName, String displayName, boolean addToExceptionList){
+        ConceptOption conceptOption = new ConceptOption(conceptCode, conceptCodeSystem, conceptCodeSystemName, displayName);
+        if(addToExceptionList){
+            exceptionConceptOptionList.add(conceptOption );
+        }
+        else {
+            conceptOptionList.add(conceptOption );
+        }
     }
 
-    public void addConceptDesignation(String language, String displayName){
-        conceptOptionList.get(conceptOptionList.size()-1).addDesignation(language, displayName);
+    public void addConceptDesignation(String language, String displayName, boolean addToExceptionList){
+        ConceptOption conceptOption;
+        if(addToExceptionList){
+            conceptOption = exceptionConceptOptionList.get(exceptionConceptOptionList.size()-1);
+        }
+        else {
+            conceptOption = conceptOptionList.get(conceptOptionList.size()-1);
+        }
+        conceptOption.addDesignation(language, displayName);
     }
 
     public void setStatusCode(String statusCode){
@@ -86,6 +101,9 @@ public class ArtDecorValueSet {
         stringBuilder.append("<conceptList>\n");
         for(ConceptOption conceptOption:conceptOptionList){
             stringBuilder.append(conceptOption.toXML());
+        }
+        for(ConceptOption conceptOption:exceptionConceptOptionList){
+            stringBuilder.append(conceptOption.toXMLException());
         }
         stringBuilder.append("</conceptList>\n");
         stringBuilder.append("</valueSet>\n");
@@ -137,6 +155,16 @@ public class ArtDecorValueSet {
                 stringBuilder.append(designation.toXML());
             }
             stringBuilder.append("</concept>\n");
+            return stringBuilder.toString();
+        }
+
+        private String toXMLException(){
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("<exception code=\""+conceptCode+"\" codeSystem=\""+ conceptCodeSystem+"\" codeSystemName=\""+conceptCodeSystemName+"\" displayName=\""+displayName+"\" level=\""+level+"\" type=\""+type+"\">\n");
+            for(Designation designation:designationList){
+                stringBuilder.append(designation.toXML());
+            }
+            stringBuilder.append("</exception>\n");
             return stringBuilder.toString();
         }
     }

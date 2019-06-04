@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import settings.RunParameters;
+import settings.Statics;
 import utils.ExcelUtils;
 
 import java.io.IOException;
@@ -51,6 +52,7 @@ class Codebook {
 
     private static void parseInfoSheet(Codebook codebook, Workbook workbook, RunParameters runParameters){
         Sheet sheet = workbook.getSheet("Info");
+        if(sheet==null) throw new RuntimeException("Info sheet missing...");
         Map<String, String> valueMap = createValueMap(sheet);
         codebook.datasetVersionLabel = valueMap.get("version");
         codebook.setEffectiveDate(valueMap);
@@ -104,7 +106,6 @@ class Codebook {
                 effectiveDate = outFormat.format(effectiveDateAsDate);
 
             } catch (ParseException e) {
-//                String message="The effective date is not in the correct format. Please fix. "+valueMap.get("effectivedate");
                 logger.log(Level.ERROR, "codebook version: {}; Severe Error: The effective date is not in the correct format {}", datasetVersionLabel, valueMap.get("effectivedate"));
                 try{
                     effectiveDateAsDate = parseFormat.parse("1900-01-01");
@@ -115,6 +116,7 @@ class Codebook {
             }
         }
         else{
+            logger.log(Level.WARN, "codebook version: {}; Warning: The Effectivedate is not available in the INFO sheet (yyyy-mm-dd). Setting it to today... ", datasetVersionLabel);
             effectiveDateAsDate = new Date();
             effectiveDate = outFormat.format(effectiveDateAsDate);
         }
@@ -134,14 +136,33 @@ class Codebook {
         headerList = ExcelUtils.getRowAsList(row);
     }
 
+    private boolean isValidEntry(String id, String codesystem, String code, String description_code){
+        boolean isValid=true;
+        if(conceptMap.containsKey(id)){
+            logger.log(Level.ERROR, "codebook version: {}; Concept: The identifier in the codebook must be unique {}", datasetVersionLabel, id);
+            isValid = false;
+        }
+        if(Statics.mayBeTypo(codesystem)){
+            logger.log(Level.WARN, "codebook version: {}; Concept: Codesystem found: {} for {}. Did you mean {}?", datasetVersionLabel, codesystem, id, Statics.getTypoValue(codesystem));
+        }
+        if(code.equalsIgnoreCase("")){
+            logger.log(Level.ERROR, "codebook version: {}; Concept: Mandatory code missing for concept {}", datasetVersionLabel, id);
+            isValid = false;
+        }
+        if(codesystem.equalsIgnoreCase("")){
+            logger.log(Level.ERROR, "codebook version: {}; Concept: Mandatory codesystem missing for concept {}", datasetVersionLabel, id);
+            isValid = false;
+        }
+        if(description_code.equalsIgnoreCase("")){
+            logger.log(Level.ERROR, "codebook version: {}; Concept: Mandatory code description missing for concept {}", datasetVersionLabel, id);
+            isValid = false;
+        }
+        return isValid;
+    }
+
     private void addData(Workbook workbook, Row row){
         // create a codebook item for the row and store it in a map
         String id = ExcelUtils.getValue(row, "id", headerList);
-
-        if(conceptMap.containsKey(id)){
-            logger.log(Level.ERROR, "codebook version: {}; Severe Error: the identifier in the codebook must be unique {}", datasetVersionLabel, id);
-        }
-
         String codesystem = ExcelUtils.getValue(row, "codesystem", headerList);
         String code = ExcelUtils.getValue(row, "code", headerList);
         String description_code = ExcelUtils.getValue(row, "description_code", headerList);
@@ -150,19 +171,23 @@ class Codebook {
         String parent = ExcelUtils.getValue(row, "parent", headerList);
         String data_type = ExcelUtils.getValue(row, "data_type", headerList);
 
-        Concept concept = new Concept(id, codesystem, code, description_code, properties, codelist_ref, parent, data_type, effectiveDate, datasetVersionLabel, runParameters.getStatusCode());
+        // If the concept itself is invalid, we basically stop for this entry. This also implies that any errors made
+        // in the concept's codelist will not be shown until the concept itself is fixed.
+        if(isValidEntry(id, codesystem, code, description_code)) {
+            Concept concept = new Concept(id, codesystem, code, description_code, properties, codelist_ref, parent, data_type, effectiveDate, datasetVersionLabel, runParameters.getStatusCode());
 
-        Set<String> languages = runParameters.getLanguages();
-        for(String language:languages){
-            String languageDescription = ExcelUtils.getValue(row, "description_"+language, headerList);
-            concept.addLanguageConcept(language, languageDescription);
-        }
+            Set<String> languages = runParameters.getLanguages();
+            for (String language : languages) {
+                String languageDescription = ExcelUtils.getValue(row, "description_" + language, headerList);
+                concept.addLanguageConcept(language, languageDescription);
+            }
 
-        conceptMap.put(id, concept);
+            conceptMap.put(id, concept);
 
-        // if the codebook item has a codelist add it as well
-        if(!codelist_ref.equalsIgnoreCase("")) {
-            addCodeList(workbook, concept, codelist_ref);
+            // if the codebook item has a codelist add it as well
+            if (!codelist_ref.equalsIgnoreCase("")) {
+                addCodeList(workbook, concept, codelist_ref);
+            }
         }
     }
 
@@ -179,8 +204,8 @@ class Codebook {
             for (int i = 1; i <= lastRowNr; i++) {
                 row = sheet.getRow(i);
                 // if the row exists, add the information in the row to our excelCodebook
-                if (row != null) {
-                    concept.addCodeListEntry(row, codelistHeaderList, runParameters.getLanguages());
+                if (row != null && !ExcelUtils.isEmptyRow(row)) {
+                    concept.addCodeListEntry(row, codelistHeaderList, runParameters.getLanguages(), codelist_ref);
 //                    addCodeListEntry(concept, row, codelistHeaderList);
                 }
             }

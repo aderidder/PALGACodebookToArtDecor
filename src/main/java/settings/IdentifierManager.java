@@ -80,12 +80,13 @@ public class IdentifierManager {
                 "<baseId id=\""+projectId+".9\" type=\"EL\" prefix=\""+projectPrefix+"template-element-\"/>\n",
                 "<baseId id=\""+projectId+".10\" type=\"TM\" prefix=\""+projectPrefix+"template-\"/>\n",
                 "<baseId id=\""+projectId+".11\" type=\"VS\" prefix=\""+projectPrefix+"valueset-\"/>\n",
-                "<baseId id=\""+projectId+".16\" type=\"RL\" prefix=\""+projectPrefix+"rule-intern-\"/>\n",
-                "<baseId id=\""+projectId+".17\" type=\"TX\" prefix=\""+projectPrefix+"test-transaction-\"/>\n",
+                "<baseId id=\""+projectId+".12\" type=\"RL\" prefix=\""+projectPrefix+"rule-intern-\"/>\n",
                 "<baseId id=\""+projectId+".18\" type=\"SX\" prefix=\""+projectPrefix+"test-scenario-\"/>\n",
                 "<baseId id=\""+projectId+".19\" type=\"EX\" prefix=\""+projectPrefix+"example-instance-\"/>\n",
                 "<baseId id=\""+projectId+".20\" type=\"QX\" prefix=\""+projectPrefix+"qualification-test-instance-\"/>\n",
-                "<baseId id=\""+projectId+".21\" type=\"CM\" prefix=\""+projectPrefix+"community-\"/>\n",
+                "<baseId id=\""+projectId+".21\" type=\"TX\" prefix=\""+projectPrefix+"test-transaction-\"/>\n",
+                "<baseId id=\""+projectId+".22\" type=\"CM\" prefix=\""+projectPrefix+"community-\"/>\n",
+                "<baseId id=\""+projectId+".24\" type=\"MP\" prefix=\""+projectPrefix+"concept-map-\"/>\n", //?
                 "<defaultBaseId id=\""+projectId+".1\" type=\"DS\"/>\n",
                 "<defaultBaseId id=\""+projectId+".2\" type=\"DE\"/>\n",
                 "<defaultBaseId id=\""+projectId+".3\" type=\"SC\"/>\n",
@@ -97,12 +98,13 @@ public class IdentifierManager {
                 "<defaultBaseId id=\""+projectId+".9\" type=\"EL\"/>\n",
                 "<defaultBaseId id=\""+projectId+".10\" type=\"TM\"/>\n",
                 "<defaultBaseId id=\""+projectId+".11\" type=\"VS\"/>\n",
-                "<defaultBaseId id=\""+projectId+".16\" type=\"RL\"/>\n",
-                "<defaultBaseId id=\""+projectId+".17\" type=\"TX\"/>\n",
+                "<defaultBaseId id=\""+projectId+".12\" type=\"RL\"/>\n",
                 "<defaultBaseId id=\""+projectId+".18\" type=\"SX\"/>\n",
                 "<defaultBaseId id=\""+projectId+".19\" type=\"EX\"/>\n",
                 "<defaultBaseId id=\""+projectId+".20\" type=\"QX\"/>\n",
-                "<defaultBaseId id=\""+projectId+".21\" type=\"CM\"/>\n"
+                "<defaultBaseId id=\""+projectId+".21\" type=\"TX\"/>\n",
+                "<defaultBaseId id=\""+projectId+".22\" type=\"CM\"/>\n",
+                "<defaultBaseId id=\""+projectId+".24\" type=\"MP\"/>\n"
         );
     }
 

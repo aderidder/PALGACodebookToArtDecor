@@ -15,9 +15,11 @@ class StringUtils {
         value = value.replaceAll(">", "&gt;");
         value = value.replaceAll("'", "&apos;");
         value = value.replaceAll("\"", "&quot;");
+        value = value.replaceAll("≥", "&gt;=");
+        value = value.replaceAll("≤", "&lt;=");
         // replace all whitespace characters with a normal space
         // this due to an a0 character appearing
         value = value.replaceAll("[\\p{Zs}\\s]+", " ");
-        return value;
+        return value.trim();
     }
 }

@@ -56,21 +56,37 @@ class Concept {
         return code;
     }
 
-    void addCodeListEntry(Row row, List<String> codelistHeaderList, Set<String> languages){
-        String codesystem = ExcelUtils.getValue(row, "codesystem", codelistHeaderList);
-        String code = ExcelUtils.getValue(row, "code", codelistHeaderList);
-        String description_code = ExcelUtils.getValue(row, "description_code", codelistHeaderList);
-
-        // in some cases the codebook contains a blank line, which we do not want to add to our codelists
-        // first check whether one of the mandatory fields is empty
-        if(code.equalsIgnoreCase("") || codesystem.equalsIgnoreCase("") || description_code.equalsIgnoreCase("")) {
-            // next check one of the mandatory fields is not empty; if so give an error
-            if(!code.equalsIgnoreCase("") || !codesystem.equalsIgnoreCase("") || !description_code.equalsIgnoreCase("")){
-                logger.log(Level.ERROR, "Mandatory values missing in a codelist entry for concept "+id+" (code, codesystem and description of the code need a value)");
-            }
+    // test me! and do something similar for the concepts in the codebook.
+    private boolean isValidEntry(String codeListEntryCodesystem, String codeListEntryCode, String codeListEntryDescription_code, String codelist_ref){
+        boolean isValidEntry=true;
+        if(Statics.mayBeTypo(codesystem)){
+            logger.log(Level.WARN, "codebook version: {}; Codelist Entry: Codesystem found: {} in sheet {}. Did you mean {}?", versionLabel, codesystem, codelist_ref, Statics.getTypoValue(codesystem));
+            isValidEntry = false;
         }
-        else{
-            ConceptOption conceptOption = new ConceptOption(codesystem, code, description_code);
+
+        // first check whether one of the mandatory fields is empty
+        if(codeListEntryCode.equalsIgnoreCase("")){
+            logger.log(Level.ERROR, "codebook version: {}; Codelist Entry: Mandatory code missing in codelist {} for concept {}", versionLabel, codelist_ref, id);
+            isValidEntry = false;
+        }
+        if(codeListEntryCodesystem.equalsIgnoreCase("")){
+            logger.log(Level.ERROR, "codebook version: {}; Codelist Entry: Mandatory codesystem missing in codelist {} for concept {}", versionLabel, codelist_ref, id);
+            isValidEntry = false;
+        }
+        if(codeListEntryDescription_code.equalsIgnoreCase("")){
+            logger.log(Level.ERROR, "codebook version: {}; Codelist Entry: Mandatory code description missing in codelist {} for concept {}", versionLabel, codelist_ref, id);
+            isValidEntry = false;
+        }
+        return isValidEntry;
+    }
+
+    void addCodeListEntry(Row row, List<String> codelistHeaderList, Set<String> languages, String codelist_ref){
+        String codeListEntryCode = ExcelUtils.getValue(row, "code", codelistHeaderList);
+        String codeListEntryDescription_code = ExcelUtils.getValue(row, "description_code", codelistHeaderList);
+        String codeListEntryCodesystem = ExcelUtils.getValue(row, "codesystem", codelistHeaderList);
+
+        if(isValidEntry(codeListEntryCodesystem, codeListEntryCode, codeListEntryDescription_code, codelist_ref)){
+            ConceptOption conceptOption = new ConceptOption(codeListEntryCodesystem, codeListEntryCode, codeListEntryDescription_code);
             for (String language : languages) {
                 String languageDescription = ExcelUtils.getValue(row, "description_" + language, codelistHeaderList);
                 String languageValue = ExcelUtils.getValue(row, "value_" + language, codelistHeaderList);
@@ -85,11 +101,15 @@ class Concept {
         ArtDecorValueSet artDecorValueSet = new ArtDecorValueSet(id, id, versionLabel, effectiveDate);
         for(ConceptOption conceptOption:conceptOptionsMap.values()){
             String codesystemName = conceptOption.codesystemName;
+            String codesystemId = IdentifierManager.getIdentifierManager().getCodeSystemId(codesystemName, effectiveDate);
+            boolean addToExceptionList = Statics.isExceptionCodeList(codesystemId);
             artDecorValueSet.addConceptOption(conceptOption.code,
-                    IdentifierManager.getIdentifierManager().getCodeSystemId(codesystemName, effectiveDate),
+                    codesystemId,
                     codesystemName,
-                    conceptOption.description_code);
-            conceptOption.addValueSetDesignations(artDecorValueSet);
+                    conceptOption.description_code,
+                    addToExceptionList);
+
+            conceptOption.addValueSetDesignations(artDecorValueSet, addToExceptionList);
         }
 
         for(LanguageConcept languageConcept:languageConceptMap.values()){
@@ -180,9 +200,9 @@ class Concept {
             languageConceptOptionsMap.put(language, languageConceptOptions);
         }
 
-        private void addValueSetDesignations(ArtDecorValueSet artDecorValueSet){
+        private void addValueSetDesignations(ArtDecorValueSet artDecorValueSet, boolean addToExceptionList){
             for(LanguageConceptOptions languageConceptOptions:languageConceptOptionsMap.values()){
-                artDecorValueSet.addConceptDesignation(languageConceptOptions.language, languageConceptOptions.description);
+                artDecorValueSet.addConceptDesignation(languageConceptOptions.language, languageConceptOptions.description, addToExceptionList);
             }
         }
     }

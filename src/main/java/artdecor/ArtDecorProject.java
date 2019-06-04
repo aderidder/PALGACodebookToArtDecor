@@ -32,7 +32,7 @@ public class ArtDecorProject {
 
         // copyright by and years should probably become parameters as well...
         stringBuilder.append(
-                "<copyright by=\"NKI\" years=\"2016 2017\" type=\"author\"/>\n" +
+                "<copyright by=\"NKI and VUmc \" years=\"2016 2017 2018 2019\" type=\"author\"/>\n" +
                         runParameters.getAuthorsStringFormatted()+"\n"+
                         "<reference url=\"http://decor.nictiz.nl/pub/"+ runParameters.getProjectReference()+"/\"/>\n" +
                         "<defaultElementNamespace ns=\"hl7:\"/>\n" +

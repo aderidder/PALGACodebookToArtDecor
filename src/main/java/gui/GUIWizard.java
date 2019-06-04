@@ -546,6 +546,7 @@ class GUIWizard {
                 generateContentText();
             }
 
+
         };
     }
 

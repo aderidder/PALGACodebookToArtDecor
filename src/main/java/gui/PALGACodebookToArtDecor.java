@@ -39,6 +39,8 @@ public class PALGACodebookToArtDecor extends Application {
 
     private RunParameters runParameters=getDefaultParameters();
 
+    private static final boolean debug = true;
+
     public static void main(String ... args) {
         launch(args);
     }
@@ -200,8 +202,15 @@ public class PALGACodebookToArtDecor extends Application {
         // 2.16.840.1.113883.2.4.3.11.60.904
         // s2nki
         // String codebookDirectory, String projectId, String projectPrefix, String experimental, String authorString, String statusCode)
-        RunParameters runParameters = new RunParameters("","","","true","","draft");
-//        RunParameters runParameters = new RunParameters("U:\\test\\XMLTest\\20. smallTestThreeCodebooks","2.16.840.1.113883.2.4.3.11.60.904", "s2nki-","true","sdr;sdr@ridder.nl;sander","draft");
+        RunParameters runParameters;
+        if (debug){
+            runParameters = new RunParameters("","1.2.3.4", "test-","true","sanderderidder;a.deridder@vumc.nl;Sander de Ridder","draft");
+            runParameters.addLanguageSettings("nl", "Nederlandse Project Omschrijving", "Nederlandse Project Naam");
+            runParameters.addLanguageSettings("en", "English Project Description", "English Project Name");
+        }
+        else{
+            runParameters = new RunParameters("","","","true","","draft");
+        }
         return runParameters;
     }
 
@@ -258,6 +267,7 @@ public class PALGACodebookToArtDecor extends Application {
                 logger.log(Level.INFO, "Finished!");
             } catch (Exception e){
                 logger.log(Level.INFO, "A fatal error occurred:\n"+e.getMessage());
+                e.printStackTrace();
             }
             return null;
         }
