@@ -17,7 +17,7 @@ public class ArtDecorProject {
 
     public String toXML(){
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("<project id=\""+ runParameters.getProjectId()+"\" prefix=\""+ runParameters.getProjectPrefix()+"\" experimental=\""+ runParameters.getExperimental()+"\" defaultLanguage=\""+ runParameters.getDefaultLanguage()+"\">\n");
+        stringBuilder.append("<project id=\""+ runParameters.getProjectId()+"\" prefix=\""+ runParameters.getProjectPrefix()+"\" experimental=\""+ runParameters.getExperimental()+"\" defaultLanguage=\""+ Statics.getArtDecorLanguage(runParameters.getDefaultLanguage())+"\">\n");
         Set<String> languages = runParameters.getLanguages();
 
         for(String language:languages){
