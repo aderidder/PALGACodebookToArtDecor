@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class Statics {
     private static Map<String, String> languageMap = new HashMap<>();
-    private static Map<String, String> valueDomainTypeMap = new HashMap<>();
+    private static Map<String, String> valueDomainTypeMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private static Map<String, String> optionsInLangaugeMap = new HashMap<>();
     private static List<String> exceptionCodelists = new ArrayList<>();
     private static Map<String,String> typoMap = new HashMap<>();
@@ -25,7 +25,7 @@ public class Statics {
 //        valueDomainTypeMap.put("int", "quantity");
 //        valueDomainTypeMap.put("real", "quantity");
 
-        // art-decor support the following data types:
+        // art-decor supports the following data types:
         // https://art-decor.org/mediawiki/index.php?title=DECOR-dataset
         // attempting to convert some of our datatypes to their datatypes
         valueDomainTypeMap.put("numeric", "decimal");
@@ -35,6 +35,11 @@ public class Statics {
         valueDomainTypeMap.put("date", "date");
         valueDomainTypeMap.put("int", "count");
         valueDomainTypeMap.put("real", "decimal");
+
+        valueDomainTypeMap.put("LOG", "code");
+        valueDomainTypeMap.put("CAT", "code");
+        valueDomainTypeMap.put("STR", "string");
+        valueDomainTypeMap.put("REAL", "decimal");
 
         optionsInLangaugeMap.put("nl", "Opties voor");
         optionsInLangaugeMap.put("en", "Options for");
@@ -68,7 +73,7 @@ public class Statics {
         if(valueDomainTypeMap.containsKey(type.toLowerCase())) {
             return valueDomainTypeMap.get(type.toLowerCase());
         }
-        System.out.println("NOT FOUND FOR CONVERSION: "+type);
+        System.err.println("NOT FOUND FOR CONVERSION: "+type);
         return "string";
     }
 

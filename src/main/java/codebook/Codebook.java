@@ -244,11 +244,16 @@ class Codebook {
 //    }
 
     int getDatasetVersionLabel() {
-        return Integer.parseInt(datasetVersionLabel);
+        try {
+            return Integer.parseInt(datasetVersionLabel);
+        } catch (Exception e){
+            logger.log(Level.ERROR, "Only integer values are supported as version number at the moment.");
+            return 0;
+        }
     }
 
     ArtDecorDataset createArtDecorDataset(String artdecorDatasetId){
-        ArtDecorDataset artDecorDataset = new ArtDecorDataset(artdecorDatasetId, effectiveDate, Integer.parseInt(datasetVersionLabel), runParameters.getStatusCode());
+        ArtDecorDataset artDecorDataset = new ArtDecorDataset(artdecorDatasetId, effectiveDate, getDatasetVersionLabel(), runParameters.getStatusCode());
         for(Map.Entry<String, CodebookLanguageParameters> entrySet:codebookLanguageParametersMap.entrySet()) {
             CodebookLanguageParameters codebookLanguageParameters = entrySet.getValue();
             artDecorDataset.addLanguageParameter(entrySet.getKey(), codebookLanguageParameters.datasetName, codebookLanguageParameters.datasetDescription);

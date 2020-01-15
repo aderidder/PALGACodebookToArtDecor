@@ -8,7 +8,7 @@ import settings.Statics;
 import java.util.*;
 
 /**
- *
+ * Concept in ART-DECOR
  */
 public class ArtDecorConcept {
     private static final Logger logger = LogManager.getLogger(ArtDecorConcept.class.getName());
