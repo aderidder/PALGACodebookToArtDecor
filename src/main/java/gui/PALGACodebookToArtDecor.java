@@ -205,12 +205,15 @@ public class PALGACodebookToArtDecor extends Application {
         RunParameters runParameters;
         if (debug){
             runParameters = new RunParameters("","1.2.3.4", "test-","true","sanderderidder;a.deridder@vumc.nl;Sander de Ridder","draft");
-            runParameters.addLanguageSettings("nl", "Nederlandse Project Omschrijving", "Nederlandse Project Naam");
-            runParameters.addLanguageSettings("en", "English Project Description", "English Project Name");
+            runParameters.setDefaultLanguage("nl");
         }
         else{
             runParameters = new RunParameters("","","","true","","draft");
         }
+        runParameters.addLanguageSettings("nl", "Nederlandse Project Omschrijving", "Nederlandse Project Naam");
+        runParameters.addLanguageSettings("en", "English Project Description", "English Project Name");
+        runParameters.setDefaultLanguage("nl");
+
         return runParameters;
     }
 

@@ -62,14 +62,18 @@ public class RunParameters {
         }
     }
 
+    public void setDefaultLanguage(String defaultLanguage){
+        this.defaultLanguage = defaultLanguage;
+    }
+
     public String getDefaultLanguage(){
         return defaultLanguage;
     }
 
     public void addLanguageSettings(String language, String projectDescription, String projectName){
-        if(languageParametersMap.size()==0){
-            defaultLanguage = Statics.getArtDecorLanguage(language);
-        }
+//        if(languageParametersMap.size()==0){
+//            defaultLanguage = Statics.getArtDecorLanguage(language);
+//        }
         languageParametersMap.put(language, new LanguageParameters(projectDescription, projectName));
     }
 

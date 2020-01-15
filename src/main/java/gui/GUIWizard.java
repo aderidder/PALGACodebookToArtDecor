@@ -205,6 +205,7 @@ class GUIWizard {
             private TextField nrLanguagesSelectedTextField;
             private ComboBox <String> experimentalComboBox;
             private ComboBox <String> statusCodeComboBox;
+            private ComboBox <String> defaultLanguageComboBox = createComboBox("defaultLanguage", FXCollections.observableArrayList());
             private TextArea authorsArea;
             private CheckComboBox<String> languageCheckComboBox;
 
@@ -304,12 +305,18 @@ class GUIWizard {
                 nrLanguagesSelectedTextField.setPrefWidth(30);
                 nrLanguagesSelectedTextField.setEditable(false);
                 smallPane.add(nrLanguagesSelectedTextField, 2, 0);
+
+                smallPane.add(new Label("Default Language"), 3, 0);
+                smallPane.add(defaultLanguageComboBox, 4, 0);
+
                 gridPane.add(smallPane, 1, row);
 
                 Set<String> languages = oldParameters.getLanguages();
                 for(String language:languages) {
                     languageCheckComboBox.getCheckModel().check(language);
                 }
+
+                defaultLanguageComboBox.getSelectionModel().select(oldParameters.getDefaultLanguage());
                 return row;
             }
 
@@ -317,6 +324,21 @@ class GUIWizard {
                 // create a listener which updates the nrLanguageTextfield as well as calls the setupLanguagePages
                 ListChangeListener<String> listChangeListener = c -> {
                     nrLanguagesSelectedTextField.setText(String.valueOf(c.getList().size()));
+
+                    // find the currently selected default language
+                    String selectedDefaultLanguage = defaultLanguageComboBox.getSelectionModel().getSelectedItem();
+                    // update the default languages combobox
+                    ObservableList<String> checkedItems = languageCheckComboBox.getCheckModel().getCheckedItems();
+                    defaultLanguageComboBox.setItems(FXCollections.observableArrayList(checkedItems));
+
+                    // restore the previously selected default language if possible
+                    if(defaultLanguageComboBox.getItems().contains(selectedDefaultLanguage)){
+                        defaultLanguageComboBox.getSelectionModel().select(selectedDefaultLanguage);
+                    }
+                    else{
+                        defaultLanguageComboBox.getSelectionModel().selectFirst();
+                    }
+
                     setupLanguagePages();
                 };
 
@@ -537,6 +559,7 @@ class GUIWizard {
                     String languageDescription = getStringSetting(wizard.getSettings(), "projectDescription"+language);
                     runParameters.addLanguageSettings(language, languageDescription, languageName);
                 }
+                runParameters.setDefaultLanguage(getStringSetting(wizard.getSettings(), "defaultLanguage"));
             }
 
             @Override
